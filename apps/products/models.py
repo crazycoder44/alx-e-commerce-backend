@@ -21,6 +21,10 @@ class Category(models.Model):
         verbose_name = 'Category'
         verbose_name_plural = 'Categories'
         ordering = ['name']
+        indexes = [
+            models.Index(fields=['name'], name='category_name_idx'),
+            models.Index(fields=['slug'], name='category_slug_idx'),
+        ]
 
     def __str__(self):
         return self.name
@@ -77,10 +81,20 @@ class Product(models.Model):
         verbose_name_plural = 'Products'
         ordering = ['-created_at']
         indexes = [
-            models.Index(fields=['category']),
-            models.Index(fields=['price']),
-            models.Index(fields=['-created_at']),
-            models.Index(fields=['is_active', 'category']),
+            # Single field indexes
+            models.Index(fields=['category'], name='product_category_idx'),
+            models.Index(fields=['price'], name='product_price_idx'),
+            models.Index(fields=['-created_at'], name='product_created_idx'),
+            models.Index(fields=['slug'], name='product_slug_idx'),
+            models.Index(fields=['is_active'], name='product_active_idx'),
+            models.Index(fields=['stock_quantity'], name='product_stock_idx'),
+            
+            # Composite indexes for common query patterns
+            models.Index(fields=['is_active', 'category'], name='product_active_cat_idx'),
+            models.Index(fields=['is_active', 'price'], name='product_active_price_idx'),
+            models.Index(fields=['is_active', '-created_at'], name='product_active_created_idx'),
+            models.Index(fields=['category', 'price'], name='product_cat_price_idx'),
+            models.Index(fields=['category', '-created_at'], name='product_cat_created_idx'),
         ]
 
     def __str__(self):
