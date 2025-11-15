@@ -22,15 +22,49 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
-# Swagger schema view
+# Swagger schema view with comprehensive API documentation
 schema_view = get_schema_view(
     openapi.Info(
-        title="E-Commerce API",
+        title="E-Commerce Backend API",
         default_version='v1',
-        description="A comprehensive e-commerce backend API with product management, user authentication, and more.",
+        description="""
+# E-Commerce Backend API Documentation
+
+A comprehensive RESTful API for e-commerce applications featuring:
+
+## Features
+* 🔐 **JWT Authentication** - Secure user registration and login
+* 📦 **Product Management** - Full CRUD operations for products and categories
+* 🔍 **Advanced Filtering** - Filter by category, price range, and stock availability
+* 📊 **Sorting & Pagination** - Efficient data retrieval with customizable sorting
+* 🔒 **Permission-based Access** - Owner and admin-level permissions
+* 📚 **Comprehensive Documentation** - Interactive API documentation
+
+## Authentication
+This API uses JWT (JSON Web Tokens) for authentication. To access protected endpoints:
+1. Register a new account at `/api/auth/register/`
+2. Login at `/api/auth/login/` to receive access and refresh tokens
+3. Include the access token in the Authorization header: `Bearer <token>`
+4. Use `/api/auth/refresh/` to get a new access token when it expires
+
+## Getting Started
+1. Register a new user account
+2. Login to receive JWT tokens
+3. Use the "Authorize" button above to add your token
+4. Start exploring the API endpoints
+
+For detailed examples and usage guide, see the [API Guide](https://github.com/crazycoder44/alx-e-commerce-backend/blob/main/API_GUIDE.md)
+        """,
         terms_of_service="https://www.example.com/terms/",
-        contact=openapi.Contact(email="contact@ecommerce.local"),
-        license=openapi.License(name="MIT License"),
+        contact=openapi.Contact(
+            name="E-Commerce API Support",
+            email="contact@ecommerce.local",
+            url="https://github.com/crazycoder44/alx-e-commerce-backend"
+        ),
+        license=openapi.License(
+            name="MIT License",
+            url="https://opensource.org/licenses/MIT"
+        ),
     ),
     public=True,
     permission_classes=(permissions.AllowAny,),
