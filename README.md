@@ -2,14 +2,31 @@
 
 A robust Django REST Framework-based backend system for e-commerce applications featuring product catalog management, user authentication, and comprehensive API documentation.
 
+[![Python Version](https://img.shields.io/badge/python-3.10+-blue.svg)](https://python.org)
+[![Django Version](https://img.shields.io/badge/django-4.2.7-green.svg)](https://djangoproject.com)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+## 📋 Table of Contents
+
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Documentation](#documentation)
+- [Quick Start](#quick-start)
+- [API Endpoints](#api-endpoints)
+- [Development](#development)
+- [Contributing](#contributing)
+- [License](#license)
+
 ## Features
 
-- 🔐 JWT-based user authentication
-- 📦 Product and category management
-- 🔍 Advanced filtering, sorting, and pagination
-- 📚 Comprehensive Swagger/OpenAPI documentation
-- ⚡ Optimized database queries with PostgreSQL
-- 🔒 Secure API endpoints with permission controls
+- 🔐 **JWT Authentication** - Secure user registration, login, and token management
+- 📦 **Product Management** - Full CRUD operations for products and categories
+- 🔍 **Advanced Filtering** - Filter by category, price range, stock availability
+- 📊 **Sorting & Pagination** - Efficient data retrieval with customizable sorting
+- 📚 **API Documentation** - Interactive Swagger UI and ReDoc
+- ⚡ **Performance Optimized** - Database indexing and query optimization
+- 🔒 **Permission-based Access** - Owner and admin-level permissions
+- 🎯 **RESTful Design** - Clean and intuitive API structure
 
 ## Tech Stack
 
@@ -18,7 +35,17 @@ A robust Django REST Framework-based backend system for e-commerce applications 
 - **Database**: PostgreSQL
 - **Authentication**: JWT (djangorestframework-simplejwt)
 - **Documentation**: drf-yasg (Swagger/OpenAPI)
+- **Filtering**: django-filter
 - **Image Processing**: Pillow
+
+## 📚 Documentation
+
+- **[API Guide](API_GUIDE.md)** - Comprehensive API usage examples and reference
+- **[Database Optimization](DATABASE_OPTIMIZATION.md)** - Performance tuning and indexing strategies
+- **[Implementation Plan](IMPLEMENTATION_PLAN.md)** - Project development roadmap
+- **[Contributing Guide](CONTRIBUTING.md)** - How to contribute to this project
+- **[Swagger UI](http://localhost:8000/api/docs/)** - Interactive API documentation (when server is running)
+- **[ReDoc](http://localhost:8000/api/redoc/)** - Alternative API documentation view
 
 ## Prerequisites
 
@@ -26,7 +53,7 @@ A robust Django REST Framework-based backend system for e-commerce applications 
 - PostgreSQL 12+
 - pip (Python package manager)
 
-## Installation
+## Quick Start
 
 ### 1. Clone the repository
 
@@ -227,7 +254,7 @@ python manage.py collectstatic
 
 ## Git Workflow
 
-This project follows a structured commit workflow:
+This project follows a structured commit workflow based on conventional commits:
 
 ```bash
 feat: set up Django project with PostgreSQL
@@ -237,6 +264,19 @@ feat: integrate Swagger documentation for API endpoints
 perf: optimize database queries with indexing
 docs: add API usage instructions in Swagger
 ```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+
+## 📈 Performance
+
+### Optimization Features
+
+- **Database Indexing**: Strategic indexes on frequently queried fields
+- **Query Optimization**: Using `select_related()` and `prefetch_related()`
+- **Pagination**: Efficient data loading with configurable page sizes
+- **Caching Ready**: Structure supports Redis/Memcached integration
+
+See [DATABASE_OPTIMIZATION.md](DATABASE_OPTIMIZATION.md) for details.
 
 ## Deployment
 
@@ -251,6 +291,17 @@ docs: add API usage instructions in Swagger
 - [ ] Configure CORS properly
 - [ ] Enable database backups
 - [ ] Set up logging
+- [ ] Configure rate limiting
+- [ ] Set up monitoring (New Relic, DataDog, etc.)
+
+### Deployment Platforms
+
+This API can be deployed on:
+- **Heroku**: Easy deployment with PostgreSQL addon
+- **Railway**: Modern platform with PostgreSQL support
+- **DigitalOcean**: App Platform or Droplets
+- **AWS**: EC2, RDS, and Elastic Beanstalk
+- **Google Cloud**: App Engine or Compute Engine
 - [ ] Configure rate limiting
 
 ## Contributing
