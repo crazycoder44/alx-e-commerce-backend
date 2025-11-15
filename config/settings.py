@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',  # For JWT token blacklisting
     'corsheaders',
     'drf_yasg',
+    'django_filters',  # For filtering in DRF
     
     # Local apps
     'apps.authentication',
