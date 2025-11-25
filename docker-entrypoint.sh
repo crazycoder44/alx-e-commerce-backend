@@ -61,10 +61,9 @@ if [ ! -s "$PGDATA/PG_VERSION" ]; then
 
   # Write a temporary SQL file with variables expanded by the shell, then execute it as the postgres user.
   TMP_SQL=/tmp/init_db.sql
-  cat > "$TMP_SQL" <<SQL
-DO
 
-$$
+  cat > "$TMP_SQL" <<SQL
+DO $$
 BEGIN
   IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '${POSTGRES_USER}') THEN
     EXECUTE format('CREATE USER %I WITH PASSWORD %L', '${POSTGRES_USER}', '${POSTGRES_PASSWORD}');
