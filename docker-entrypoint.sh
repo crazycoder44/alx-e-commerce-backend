@@ -53,15 +53,24 @@ if [ ! -s "$PGDATA/PG_VERSION" ]; then
 
   su -s /bin/bash postgres -c "$PG_CTL_CMD -D '$PGDATA' -o \"-c listen_addresses='localhost'\" -w start"
 
-  echo "[entrypoint] Creating user and database..."
+  echo "[entrypoint] Creating user and database (if missing)..."
   if [ -z "$PSQL_CMD" ]; then
     echo "[entrypoint][error] psql not found in image." >&2
     exit 127
   fi
 
   su -s /bin/bash postgres -c "$PSQL_CMD -v ON_ERROR_STOP=1 --username postgres <<-EOSQL
-    CREATE USER ${POSTGRES_USER} WITH PASSWORD '${POSTGRES_PASSWORD}';
-    CREATE DATABASE ${POSTGRES_DB} OWNER ${POSTGRES_USER};
+    DO
+    \\$$
+    BEGIN
+      IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '${POSTGRES_USER}') THEN
+        EXECUTE format('CREATE USER %I WITH PASSWORD %L', '${POSTGRES_USER}', '${POSTGRES_PASSWORD}');
+      END IF;
+      IF NOT EXISTS (SELECT FROM pg_database WHERE datname = '${POSTGRES_DB}') THEN
+        EXECUTE format('CREATE DATABASE %I OWNER %I', '${POSTGRES_DB}', '${POSTGRES_USER}');
+      END IF;
+    END
+    \\$$;
 EOSQL"
 
   echo "[entrypoint] Stopping temporary Postgres..."
