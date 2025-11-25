@@ -59,19 +59,25 @@ if [ ! -s "$PGDATA/PG_VERSION" ]; then
     exit 127
   fi
 
-  su -s /bin/bash postgres -c "$PSQL_CMD -v ON_ERROR_STOP=1 --username postgres <<-EOSQL
-    DO
-    \\$$
-    BEGIN
-      IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '${POSTGRES_USER}') THEN
-        EXECUTE format('CREATE USER %I WITH PASSWORD %L', '${POSTGRES_USER}', '${POSTGRES_PASSWORD}');
-      END IF;
-      IF NOT EXISTS (SELECT FROM pg_database WHERE datname = '${POSTGRES_DB}') THEN
-        EXECUTE format('CREATE DATABASE %I OWNER %I', '${POSTGRES_DB}', '${POSTGRES_USER}');
-      END IF;
-    END
-    \\$$;
-EOSQL"
+  # Write a temporary SQL file with variables expanded by the shell, then execute it as the postgres user.
+  TMP_SQL=/tmp/init_db.sql
+  cat > "$TMP_SQL" <<SQL
+DO
+
+$$
+BEGIN
+  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '${POSTGRES_USER}') THEN
+    EXECUTE format('CREATE USER %I WITH PASSWORD %L', '${POSTGRES_USER}', '${POSTGRES_PASSWORD}');
+  END IF;
+  IF NOT EXISTS (SELECT FROM pg_database WHERE datname = '${POSTGRES_DB}') THEN
+    EXECUTE format('CREATE DATABASE %I OWNER %I', '${POSTGRES_DB}', '${POSTGRES_USER}');
+  END IF;
+END
+$$;
+SQL
+
+  su -s /bin/bash postgres -c "$PSQL_CMD -v ON_ERROR_STOP=1 --username postgres -f $TMP_SQL"
+  rm -f "$TMP_SQL"
 
   echo "[entrypoint] Stopping temporary Postgres..."
   su -s /bin/bash postgres -c "$PG_CTL_CMD -D '$PGDATA' -m fast -w stop"
