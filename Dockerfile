@@ -6,15 +6,15 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install system deps including PostgreSQL server (experimental single-container)
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-       build-essential \
-       libpq-dev \
-       gcc \
-       postgresql \
-       postgresql-contrib \
-       curl \
-       netcat \
-    && rm -rf /var/lib/apt/lists/*
+     && apt-get install -y --no-install-recommends \
+         build-essential \
+         libpq-dev \
+         gcc \
+         postgresql \
+         postgresql-contrib \
+         curl \
+         netcat-openbsd \
+     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
