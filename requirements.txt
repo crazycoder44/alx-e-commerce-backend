@@ -21,3 +21,6 @@ Pillow==10.1.0
 
 # Additional utilities
 python-decouple==3.8
+
+# WSGI server for production
+gunicorn==20.1.0
