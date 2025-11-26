@@ -5,6 +5,38 @@ All notable changes to the E-Commerce Backend API are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - 2025-11-26
+
+### Changed - Deployment / Docker & Runtime
+- Added an experimental single-container Docker image that bundles the Django app and a PostgreSQL server for quick demos and testing. Files added:
+  - `Dockerfile`, `docker-entrypoint.sh`, `.dockerignore`, `DOCKER_SINGLE_CONTAINER.md`.
+- Improved Docker build and entrypoint reliability:
+  - Use `netcat-openbsd` instead of unavailable `netcat` package to fix apt install failures.
+  - Entry point now locates Postgres binaries (`initdb`, `pg_ctl`, `psql`) by full path and fails with clear errors if missing.
+  - Initialization made idempotent: role/database creation uses safe checks and a temporary SQL file to avoid syntax/quoting issues.
+  - Fixed dollar-quoting heredoc escaping so PostgreSQL `DO $$` blocks are written correctly.
+  - Added automatic `DATABASE_URL` export pointing to the in-container Postgres when not provided.
+  - Added automatic Django migrations and `collectstatic` during container startup.
+  - Added an auto-create-superuser step driven by `DJANGO_SUPERUSER_USERNAME`, `DJANGO_SUPERUSER_EMAIL`, `DJANGO_SUPERUSER_PASSWORD` environment variables so superusers can be created on deploy without shell access.
+
+### Added - Health check and deployment docs
+- Added a simple health endpoint: `GET /health/` (implemented in `apps/core/views.py`) and registered in `config/urls.py` to support platform health checks.
+- Added `DOCKER_SINGLE_CONTAINER.md` documenting exact build, tag, push and run steps for Docker Hub and GHCR, plus Render deployment notes and warnings about persistence on free tiers.
+- Added `.dockerignore` to reduce Docker build context.
+
+### Updated - Settings and requirements
+- `config/settings.py` now prefers a single `DATABASE_URL` when present (via `django-environ`) and falls back to `DB_*` env vars. This allows the entrypoint or platform to set `DATABASE_URL` dynamically.
+- Added `gunicorn==20.1.0` to `requirements.txt` so the image can run Gunicorn as the WSGI server.
+
+### Fixes & Notes
+- Fixed `initdb: command not found` and related startup errors by ensuring Postgres packages are installed and by searching for binaries in typical locations.
+- Resolved heredoc/quoting issues that caused `invalid command \1` and `syntax error` in SQL initialization.
+- Replaced direct heredoc execution with a safe temporary SQL file and `psql -f` execution to avoid shell quoting pitfalls.
+
+### Recommendation
+- This single-container approach is experimental and intended for demos. For production on Render, use a web-only container (no in-image DB) + managed Postgres or a separate Postgres service with persistent storage.
+
+
 ## [1.0.0] - 2025-11-15
 
 ### Added - Phase 1: Project Setup
