@@ -63,7 +63,7 @@ if [ ! -s "$PGDATA/PG_VERSION" ]; then
   TMP_SQL=/tmp/init_db.sql
 
   cat > "$TMP_SQL" <<SQL
-DO $$
+DO \$\$
 BEGIN
   IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '${POSTGRES_USER}') THEN
     EXECUTE format('CREATE USER %I WITH PASSWORD %L', '${POSTGRES_USER}', '${POSTGRES_PASSWORD}');
@@ -72,7 +72,7 @@ BEGIN
     EXECUTE format('CREATE DATABASE %I OWNER %I', '${POSTGRES_DB}', '${POSTGRES_USER}');
   END IF;
 END
-$$;
+\$\$;
 SQL
 
   su -s /bin/bash postgres -c "$PSQL_CMD -v ON_ERROR_STOP=1 --username postgres -f $TMP_SQL"
