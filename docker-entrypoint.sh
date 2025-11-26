@@ -106,5 +106,32 @@ python manage.py migrate --noinput
 echo "[entrypoint] Collecting static files..."
 python manage.py collectstatic --noinput || true
 
+# Auto-create Django superuser if env vars are provided (useful when shell is unavailable)
+if [ -n "$DJANGO_SUPERUSER_USERNAME" ]; then
+  echo "[entrypoint] Ensuring Django superuser '$DJANGO_SUPERUSER_USERNAME' exists..."
+  python - <<PY
+import os
+import django
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+django.setup()
+from django.contrib.auth import get_user_model
+User = get_user_model()
+username = os.environ.get('DJANGO_SUPERUSER_USERNAME')
+email = os.environ.get('DJANGO_SUPERUSER_EMAIL', '')
+password = os.environ.get('DJANGO_SUPERUSER_PASSWORD')
+if username:
+  if not User.objects.filter(username=username).exists():
+    if password:
+      User.objects.create_superuser(username=username, email=email, password=password)
+      print('Superuser created')
+    else:
+      print('DJANGO_SUPERUSER_PASSWORD not set; skipping superuser creation')
+  else:
+    print('Superuser already exists')
+else:
+  print('DJANGO_SUPERUSER_USERNAME not set; skipping superuser creation')
+PY
+fi
+
 echo "[entrypoint] Launching application: $@"
 exec "$@"
